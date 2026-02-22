@@ -41,6 +41,9 @@ internal class ShotgunItemPatches
 
     private static void Prefix(object __instance, int saveData)
     {
+        if (!GameNetworkManager.Instance.isHostingGame)
+            return;
+
         Transform modTransform = (Transform)transformInfo.GetValue(__instance);
         Vector3 pos = modTransform.position;
         pos += new Vector3(1f - (float)saveData/2f, 0f, 0f);

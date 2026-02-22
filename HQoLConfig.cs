@@ -18,7 +18,7 @@ public class HQoLConfig
         storageExceptionConfig = cfg.Bind(
                 "General",
                 "Dont store list",
-                "Shotgun, Knife, GiftBox",
+                "Shotgun, Knife",
                 "What items should not be stored automatically"
                 );
 

@@ -48,6 +48,9 @@ internal class SprayPaintItemPatches
 
     private static void Prefix(object __instance, int saveData)
     {
+        if (!GameNetworkManager.Instance.isHostingGame)
+            return;
+
         bool isWeedKillerSprayBottle = (bool)isWeedKillerSprayBottleInfo.GetValue(__instance);
         Transform transform = (Transform)transformInfo.GetValue(__instance);
 

@@ -65,20 +65,22 @@ internal class StartOfRoundPatches
         if (!GameNetworkManager.Instance.isHostingGame || isChalFile)
             return;
 
+        bool addedScrapThisDay = false;
         if (TimeOfDay.Instance.daysUntilDeadline == 0 && (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer))
         {
             List<GrabbableObject> allScrap = new(Object.FindObjectsByType<GrabbableObject>(FindObjectsSortMode.None));
             allScrap.RemoveAll(scrapObj =>
                     scrapObj.isHeld ||
+                    scrapObj is GiftBoxItem ||
                     !scrapObj.itemProperties.isScrap ||
-                    HQoL.modConfig.storageException.Contains(scrapObj.name.ToLower()) || //internal obj name
                     HQoL.modConfig.storageException.Contains(scrapObj.itemProperties.name.ToLower()) || //internal scrap name
                     HQoL.modConfig.storageException.Contains(scrapObj.gameObject.GetComponentInChildren<ScanNodeProperties>().headerText.ToLower())); //scan name
             Network.HQoLNetwork.Instance.AddItems(allScrap.ToArray());
             allScrap.ForEach(scrapObj => scrapObj.NetworkObject.Despawn());
+            addedScrapThisDay = true;
         }
 
-        if (Network.HQoLNetwork.Instance.storageHasBeenModified)
+        if (addedScrapThisDay || Network.HQoLNetwork.Instance.storageHasBeenModified)
         {
             try
             {

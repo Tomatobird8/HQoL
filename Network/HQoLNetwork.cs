@@ -70,17 +70,21 @@ internal class HQoLNetwork : NetworkBehaviour
 
     public void AddItems(List<ItemReference> itemRefs)
     {
+        int totalValueAdded = 0;
         foreach (ItemReference itemRef in itemRefs)
         {
             netStorage.Add(itemRef);
-            totalStorageValue.Value += itemRef.value;
+            totalValueAdded += itemRef.value;
         }
+        totalStorageValue.Value += totalValueAdded;
+        storageHasBeenModified = true;
     }
 
     public void ClearItems()
     {
         netStorage.Clear();
         totalStorageValue.Value = 0;
+        storageHasBeenModified = true;
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -91,9 +95,9 @@ internal class HQoLNetwork : NetworkBehaviour
         {
             totalStorageValue.Value -= netStorage[index].value;
             netStorage.RemoveAt(index);
-            storageHasBeenModified = true;
         }
 
+        storageHasBeenModified = true;
         UpdateQuotaAndDisplayCreditsEarningClientRpc(creditsEarned);
     }
 
@@ -120,7 +124,7 @@ internal class HQoLNetwork : NetworkBehaviour
             allScrap.RemoveAll(scrapObj =>
                     scrapObj.isHeld ||
                     !scrapObj.itemProperties.isScrap ||
-                    HQoL.modConfig.storageException.Contains(scrapObj.name.ToLower()) || //internal obj name
+                    scrapObj.itemProperties.name == "GiftBox" ||
                     HQoL.modConfig.storageException.Contains(scrapObj.itemProperties.name.ToLower()) || //internal scrap name
                     HQoL.modConfig.storageException.Contains(scrapObj.gameObject.GetComponentInChildren<ScanNodeProperties>().headerText.ToLower()) || //scan name
                     (
@@ -133,6 +137,7 @@ internal class HQoLNetwork : NetworkBehaviour
             allScrap.RemoveAll(scrapObj =>
                     scrapObj.isHeld ||
                     !scrapObj.itemProperties.isScrap ||
+                    scrapObj.itemProperties.name == "GiftBox" ||
                     scrapObj.gameObject.GetComponentInChildren<ScanNodeProperties>().headerText != itemName ||
                     (
                      TimeOfDay.Instance.daysUntilDeadline != 0 &&

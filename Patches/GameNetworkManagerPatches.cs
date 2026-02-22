@@ -49,14 +49,14 @@ internal class GameNetworkManagerPatches
     [HarmonyTranspiler]
     private static IEnumerable<CodeInstruction> TranspileSaveItemsInShip(IEnumerable<CodeInstruction> codes)
     {
-        CodeMatcher matcher = 
+        CodeMatcher matcher =
             new CodeMatcher(codes)
             .MatchForward(false,
                 new CodeMatch(OpCodes.Ldloc_1),
                 new CodeMatch(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(List<int>), nameof(List<int>.Count))),
                 new CodeMatch(OpCodes.Ldc_I4_0),
                 new CodeMatch(OpCodes.Bgt));
-        
+
         List<Label> label = matcher.Labels;
 
         return matcher

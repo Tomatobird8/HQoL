@@ -582,10 +582,10 @@ internal static class TerminalHelper
         HashSet<string> allDepositdScrapNames = new();
         foreach (GrabbableObject item in allItems)
         {
-            if (!item.itemProperties.isScrap)
+            if (!item.itemProperties.isScrap || item.itemProperties.name == "GiftBox")
                 continue;
 
-            string allScrapNames = item.name + '#' + item.itemProperties.name + '#' + item.gameObject.GetComponentInChildren<ScanNodeProperties>().headerText;
+            string allScrapNames = item.itemProperties.name + '#' + item.gameObject.GetComponentInChildren<ScanNodeProperties>().headerText;
             allDepositdScrapNames.Add(allScrapNames);
         }
 
@@ -595,7 +595,7 @@ internal static class TerminalHelper
         {
             if (!found && itemNames.ToLower().Contains(input))
             {
-                itemNameToDeposit = itemNames.Split(new char[] { '#' }, StringSplitOptions.RemoveEmptyEntries)[2];
+                itemNameToDeposit = itemNames.Split(new char[] { '#' }, StringSplitOptions.RemoveEmptyEntries)[1];
                 found = true;
             }
         }
@@ -609,7 +609,7 @@ internal static class TerminalHelper
         int count = 0;
         foreach (GrabbableObject item in allItems)
         {
-            if (!item.itemProperties.isScrap)
+            if (!item.itemProperties.isScrap || item.itemProperties.name == "GiftBox")
                 continue;
 
             if (itemNameToDeposit == item.gameObject.GetComponentInChildren<ScanNodeProperties>().headerText && !item.isHeld)

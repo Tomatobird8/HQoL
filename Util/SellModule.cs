@@ -25,7 +25,7 @@ internal class SellModule
 
         //Binary search for perfect sell with overtime
         int left = 0;
-        int right = 10*value;
+        int right = 10 * value;
         int quota = TimeOfDay.Instance.profitQuota;
         int daysLeft = TimeOfDay.Instance.daysUntilDeadline == 0 ? -1 : TimeOfDay.Instance.daysUntilDeadline;
         float rate = StartOfRound.Instance.companyBuyingRate;
@@ -33,14 +33,14 @@ internal class SellModule
         {
             int pre_sell = sell;
 
-            sell = (left + right)/2;
+            sell = (left + right) / 2;
             int overtime = Math.Max(((int)((float)sell * rate) - quota) / 5 + 15 * daysLeft, 0);
             if ((int)((float)sell * rate) + overtime >= value)
                 right = sell;
             else
                 left = sell;
 
-            if ((int)((float)sell*rate) + overtime == value)
+            if ((int)((float)sell * rate) + overtime == value)
                 break;
 
             //Edge case in which perfect sell isn't possible, sell 1 over
@@ -83,29 +83,29 @@ internal class SellModule
         }
 
     BracktrackSavingFoundItems:
-        itemReferenceIndexToSell.Clear();
-        itemTypesToSell.Clear();
-        int sumLookUp = neededSum;
-        int reqItems = Network.HQoLNetwork.Instance.netStorage.Count;
-        while (!possibleSumsMatrix[sumLookUp, reqItems])
-            sumLookUp += 1;
+    itemReferenceIndexToSell.Clear();
+    itemTypesToSell.Clear();
+    int sumLookUp = neededSum;
+    int reqItems = Network.HQoLNetwork.Instance.netStorage.Count;
+    while (!possibleSumsMatrix[sumLookUp, reqItems])
+        sumLookUp += 1;
 
-        sellValue = sumLookUp;
-        while (sumLookUp != 0)
-        {
-            while (possibleSumsMatrix[sumLookUp, reqItems - 1])
-                reqItems -= 1;
-
+    sellValue = sumLookUp;
+    while (sumLookUp != 0)
+    {
+        while (possibleSumsMatrix[sumLookUp, reqItems - 1])
             reqItems -= 1;
-            sumLookUp -= Network.HQoLNetwork.Instance.netStorage[reqItems].value;
-            itemReferenceIndexToSell.Add(reqItems);
-            if (itemTypesToSell.ContainsKey(Network.HQoLNetwork.Instance.netStorage[reqItems].itemName.ToString()))
-                itemTypesToSell[Network.HQoLNetwork.Instance.netStorage[reqItems].itemName.ToString()]++;
-            else
-                itemTypesToSell[Network.HQoLNetwork.Instance.netStorage[reqItems].itemName.ToString()] = 1;
-        }
 
-        return true;
+        reqItems -= 1;
+        sumLookUp -= Network.HQoLNetwork.Instance.netStorage[reqItems].value;
+        itemReferenceIndexToSell.Add(reqItems);
+        if (itemTypesToSell.ContainsKey(Network.HQoLNetwork.Instance.netStorage[reqItems].itemName.ToString()))
+            itemTypesToSell[Network.HQoLNetwork.Instance.netStorage[reqItems].itemName.ToString()]++;
+        else
+            itemTypesToSell[Network.HQoLNetwork.Instance.netStorage[reqItems].itemName.ToString()] = 1;
+    }
+
+    return true;
     }
 
     public bool FindAllItems()
