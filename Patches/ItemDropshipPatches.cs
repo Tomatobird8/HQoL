@@ -26,7 +26,7 @@ internal class ItemDropshipPatches
 
         __instance.shipAnimator.speed = 1f;
 
-        if (StartOfRound.Instance.currentLevelID != 3)
+        if (StartOfRound.Instance.currentLevel.spawnEnemiesAndScrap)
             return;
 
         __instance.playersFirstOrder = false;
@@ -36,7 +36,7 @@ internal class ItemDropshipPatches
     [HarmonyPrefix]
     private static void PreLandShipClientRpc(ItemDropship __instance)
     {
-        if (StartOfRound.Instance.currentLevelID != 3)
+        if (StartOfRound.Instance.currentLevel.spawnEnemiesAndScrap)
             return;
 
         __instance.shipAnimator.speed = 5f;
@@ -46,7 +46,7 @@ internal class ItemDropshipPatches
     [HarmonyPostfix]
     private static void PostOpenShipDoorsOnServer(ItemDropship __instance)
     {
-        if (StartOfRound.Instance.currentLevelID != 3)
+        if (StartOfRound.Instance.currentLevel.spawnEnemiesAndScrap)
             return;
 
         __instance.ShipLeaveClientRpc();
@@ -56,7 +56,7 @@ internal class ItemDropshipPatches
     [HarmonyPostfix]
     private static void PostUpdate(ItemDropship __instance)
     {
-        if (StartOfRound.Instance.currentLevelID != 3)
+        if (StartOfRound.Instance.currentLevel.spawnEnemiesAndScrap)
             return;
 
         int orderVehicle = -1;
@@ -98,7 +98,7 @@ internal class ItemDropshipLandVehiclePatch
 
     private static void Prefix(ItemDropship __instance)
     {
-        if (StartOfRound.Instance.currentLevelID != 3)
+        if (StartOfRound.Instance.currentLevel.spawnEnemiesAndScrap)
             return;
 
         __instance.shipAnimator.speed = 1f;
