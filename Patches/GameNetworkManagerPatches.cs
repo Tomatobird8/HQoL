@@ -43,6 +43,14 @@ internal class GameNetworkManagerPatches
         Network.HQoLNetwork.DespawnNetworkHandler();
     }
 
+    private static void NewCodeFromV81()
+    {
+				ES3.DeleteKey("shipGrabbableItemIDs", GameNetworkManager.Instance.currentSaveFileName);
+				ES3.DeleteKey("shipGrabbableItemPos", GameNetworkManager.Instance.currentSaveFileName);
+				ES3.DeleteKey("shipScrapValues", GameNetworkManager.Instance.currentSaveFileName);
+				ES3.DeleteKey("shipItemSaveData", GameNetworkManager.Instance.currentSaveFileName);
+    }
+
     //Fix the game not saving 0 items if there is no scrap and respawning them upon lobby restart
     //Basically an infinite money glitch :p
     [HarmonyPatch(nameof(GameNetworkManager.SaveItemsInShip))]
@@ -57,10 +65,24 @@ internal class GameNetworkManagerPatches
                 new CodeMatch(OpCodes.Ldc_I4_0),
                 new CodeMatch(OpCodes.Bgt));
 
-        List<Label> label = matcher.Labels;
+        CodeInstruction[] PatchedCode = 
+        {
+            new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(GameNetworkManagerPatches), nameof(GameNetworkManagerPatches.NewCodeFromV81))),
+            new CodeInstruction(OpCodes.Ret)
+        };
 
+        matcher.Advance(6);
+        if (matcher.Opcode != OpCodes.Ret)
+        {
+            HQoL.Logger.LogInfo("0 item save bug already fix, this is likely v80+");
+            return codes;
+        }
+
+        List<Label> label = matcher.Labels;
         return matcher
-            .RemoveInstructions(7)
+            .Advance(-2)
+            .RemoveInstructions(3)
+            .Insert(PatchedCode)
             .AddLabels(label)
             .InstructionEnumeration();
     }

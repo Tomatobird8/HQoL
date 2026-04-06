@@ -119,6 +119,30 @@ internal static class TerminalHelper
 
     private static string itemNameToDeposit = "";
 
+    private static CompatibleNoun CompatibleNounMixedCtor(TerminalKeyword newNoun, TerminalNode newResult)
+    {
+        var type = typeof(CompatibleNoun);
+
+        //v81+ Ctor
+        var newCtor = type.GetConstructor(new[] { typeof(TerminalKeyword), typeof(TerminalNode) });
+        if (newCtor != null)
+        {
+            return (CompatibleNoun)newCtor.Invoke(new object[] { newNoun, newResult });
+        }
+
+        //v73- Ctor
+        var oldCtor = type.GetConstructor(Type.EmptyTypes);
+        if (oldCtor != null)
+        {
+            var instance = (CompatibleNoun)oldCtor.Invoke(null);
+            instance.noun = newNoun;
+            instance.result = newResult;
+            return instance;
+        }
+
+        throw new MissingMethodException("The compiler complains if this exception isn't here :3");
+    }
+
     public class TerminalNodes
     {
         public static TerminalNode sellDeny = null!;
@@ -219,16 +243,8 @@ internal static class TerminalHelper
             sellCommand.terminalEvent = "";
             sellCommand.terminalOptions = new CompatibleNoun[2]
             {
-                new()
-                {
-                    noun = terminal.terminalNodes.allKeywords[3],
-                    result = sellConfirm
-                },
-                new()
-                {
-                    noun = terminal.terminalNodes.allKeywords[4],
-                    result = sellDeny
-                }
+                CompatibleNounMixedCtor(terminal.terminalNodes.allKeywords[3], sellConfirm),
+                CompatibleNounMixedCtor(terminal.terminalNodes.allKeywords[4], sellDeny)
             };
 
             confirmOvertime = ScriptableObject.CreateInstance<TerminalNode>();
@@ -343,16 +359,8 @@ internal static class TerminalHelper
             depositCommand.terminalEvent = "";
             depositCommand.terminalOptions = new CompatibleNoun[2]
             {
-                new()
-                {
-                    noun = terminal.terminalNodes.allKeywords[3],
-                    result = depositConfirm
-                },
-                new()
-                {
-                    noun = terminal.terminalNodes.allKeywords[4],
-                    result = depositDeny
-                }
+                CompatibleNounMixedCtor(terminal.terminalNodes.allKeywords[3], depositConfirm),
+                CompatibleNounMixedCtor(terminal.terminalNodes.allKeywords[4], depositDeny)
             };
 
             checkScrap = ScriptableObject.CreateInstance<TerminalNode>();
@@ -439,26 +447,10 @@ internal static class TerminalHelper
             defaultVerb.accessTerminalObjects = false;
             defaultVerb.compatibleNouns = new CompatibleNoun[4]
             {
-                new()
-                {
-                    noun = sellWord,
-                    result = TerminalNodes.sellCommand
-                },
-                new()
-                {
-                    noun = depositWord,
-                    result = TerminalNodes.depositCommand
-                },
-                new()
-                {
-                    noun = checkScrapWord,
-                    result = TerminalNodes.checkScrap
-                },
-                new()
-                {
-                    noun = overtimeWord,
-                    result = TerminalNodes.confirmOvertime
-                }
+                CompatibleNounMixedCtor(sellWord, TerminalNodes.sellCommand),
+                CompatibleNounMixedCtor(depositWord, TerminalNodes.depositCommand),
+                CompatibleNounMixedCtor(checkScrapWord, TerminalNodes.checkScrap),
+                CompatibleNounMixedCtor(overtimeWord, TerminalNodes.confirmOvertime)
             };
             defaultVerb.defaultVerb = null;
             defaultVerb.hideFlags = UnityEngine.HideFlags.None;
