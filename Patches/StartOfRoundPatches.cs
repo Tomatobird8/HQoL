@@ -71,8 +71,8 @@ internal class StartOfRoundPatches
             List<GrabbableObject> allScrap = new(Object.FindObjectsByType<GrabbableObject>(FindObjectsSortMode.None));
             allScrap.RemoveAll(scrapObj =>
                     scrapObj.isHeld ||
-                    scrapObj is GiftBoxItem ||
                     !scrapObj.itemProperties.isScrap ||
+                    scrapObj.itemProperties.name == "GiftBox" ||
                     HQoL.modConfig.storageException.Contains(scrapObj.itemProperties.name.ToLower()) || //internal scrap name
                     HQoL.modConfig.storageException.Contains(scrapObj.gameObject.GetComponentInChildren<ScanNodeProperties>().headerText.ToLower())); //scan name
             Network.HQoLNetwork.Instance.AddItems(allScrap.ToArray());
